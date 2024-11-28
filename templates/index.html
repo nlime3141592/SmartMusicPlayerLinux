@@ -3,6 +3,29 @@
 		<title>index</title>
 	</head>
 	<body>
-		<h1>Index.html</h1>
+		<h1>Smart Music Player</h1>
+		<div>
+			<h2>Music Player</h2>
+			<p><b>Music Name</b></p>
+			<p>Artists</p>
+			<p>
+				<button id="btn_music_prev">prev</button>
+				<button id="btn_music_next">next</button>
+			</p>
+			<p>
+				<button id="btn_music_shuffle">shuffle</button>
+				<button id="btn_music_loop">loop</button>
+				<button id="btn_music_like">like</button>
+			</p>
+			<p>
+				<button type="submit" id="btn_music_vol_up">vol++</button>
+				<button id="btn_music_vol_down">vol--</button>
+			</p>
+			<p>
+				<form action="/music/play" method="POST">
+					<button type="submit" id="btn_music_play">play/pause</button>
+				</form>
+			</p>
+		</div>
 	</body>
 </html>

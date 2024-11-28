@@ -1,33 +1,29 @@
 import main
+import logmodule as logger
+import music_handler as music
 import db_handler as db
 
 __proc_db = None
 __cntx_db = None
+__logger_name = "ServiceHandler"
 
 def init():
     global __proc_db, __cntx_db
     __proc_db, __cntx_db = main.create_proc_db()
-    print("TYPE == %s" % (type(__cntx_db)))
     __proc_db.start()
 
 def update(value):
     global __cntx_db
 
-    print(" * Request service: %s" % (value))
-
-    if value == "1" or value == 1:
-        # NOTE: test for DB connection.
-        print(" * TEST SERVICE STARTS.")
-        __cntx_db.shmem.write(1)
-        print(" * TEST SERVICE ENDS.")
-        return
-
     tokens = value.split(";")
 
-    if tokens[0] == "2":
-        print("test 2")
+    if tokens[0] == None or tokens[0] == "":
+        logger.print_log(f"Empty service requested. (message == {value})", logger_name=__logger_name)
+    elif tokens[0] == "music":
+        logger.print_log(f"Music service requested. (message == {value})", logger_name=__logger_name)
+        music.update(tokens[1:])
     else:
-        print(" * Reject service: %s" % (value))
+        logger.print_log(f"Unknown service requested, rejects. (message == {value})", logger_name=__logger_name)
 
 def final():
     global __cntx_db, __proc_db

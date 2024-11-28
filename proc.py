@@ -1,6 +1,8 @@
 import os
 import time
 
+import logmodule as logger
+
 is_run = True
 proc_ctx = None
 
@@ -9,7 +11,7 @@ def main(*args):
     proc_ctx = args[0]
     proc_ctx.shmem.swap_stream()
 
-    print(f" * Process {proc_ctx.name} starts.")
+    logger.print_log("Process starts.", logger_name=proc_ctx.name)
     proc_ctx.handler_init()
 
     while is_run == True:
@@ -23,4 +25,4 @@ def main(*args):
                 continue
 
     proc_ctx.handler_final()
-    print(f" * Process {proc_ctx.name} ends.")
+    logger.print_log("Process ends.", logger_name=proc_ctx.name)

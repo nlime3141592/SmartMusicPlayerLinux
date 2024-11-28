@@ -1,34 +1,30 @@
 from flask import Flask
 from flask import render_template
 
+from root_api import RootApi
+from music_api import MusicApi
+
 import proc
 import multiprocessing as mp
 import process_context as pctx
 import shared_memory as shmem
+import logmodule as logger
 
 websv = Flask(__name__)
 
-__proc_test = None
-__cntx_test = None
+__logger_name = "MAIN"
+__proc_service = None
+__cntx_service = None
 
-@websv.route("/test")
-def test():
-    return render_template("./test.html")
-
-@websv.route("/test/1")
-def test_send():
-    global __cntx_test
-    __cntx_test.shmem.write(1)
-    return render_template("./test.html")
-
-def create_proc_test():
+def create_proc_service():
     proc_ctx = pctx.ProcessContext()
-    proc_ctx.name = "PROC_TEST"
+    proc_ctx.name = "PROC_SERVICE"
     proc_ctx.shmem = shmem.SharedMemory(mp.Manager())
-    import test_handler as ts
-    proc_ctx.handler_init = ts.init
-    proc_ctx.handler_update = ts.update
-    proc_ctx.handler_final = ts.final
+
+    import service_handler as sv
+    proc_ctx.handler_init = sv.init
+    proc_ctx.handler_update = sv.update
+    proc_ctx.handler_final = sv.final
 
     args = (proc_ctx,)
 
@@ -51,18 +47,22 @@ def create_proc_db():
     return process, proc_ctx
 
 def main():
-    print("server will start after some seconds.")
+    logger.print_log("Server will starts after some seconds.", logger_name=__logger_name)
     
-    global __proc_test, __cntx_test
-    __proc_test, __cntx_test = create_proc_test()
-    __proc_test.start()
+    global __proc_service, __cntx_service
+    __proc_service, __cntx_service = create_proc_service()
 
+    # TODO: Initialize APIs here.
+    RootApi.init(websv, __cntx_service)
+    MusicApi.init(websv, __cntx_service)
+
+    __proc_service.start()
     websv.run(host="0.0.0.0", debug=True, port=5000, use_reloader=False)
     print("\n", end="")
 
-    __cntx_test.shmem.write(0)
-    __proc_test.join()
-    print("server closed.")
+    __cntx_service.shmem.write(0)
+    __proc_service.join()
+    logger.print_log("Server closed.", logger_name=__logger_name)
 
 if __name__ == "__main__":
     main()
