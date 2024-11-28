@@ -20,7 +20,7 @@ def update(service_string):
     global __cntx_db
 
     service_tokenizer = tok.ServiceTokenizer(service_string)
-    service_type = tokenizer.read()
+    service_type = service_tokenizer.read()
 
     if service_type == "music":
         music.update(service_tokenizer)

@@ -28,7 +28,7 @@ class MusicControlApi(MethodView):
         return render_template("./music.html")
 
     def post(self):
-        service_type = request.path.split()[3]
+        service_type = request.path.split("/")[3]
 
         if service_type == "next":
             self.__cntx.shmem.write("music;control;next;")

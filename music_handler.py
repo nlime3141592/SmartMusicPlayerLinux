@@ -21,23 +21,23 @@ def __update_music_control(service_tokenizer):
     service_type = service_tokenizer.read()
 
     if service_type == "next":
-        self.__cntx.shmem.write("music;next;")
+        logger.print_log("next executed.", logger_name=__logger_name)
     elif service_type == "prev":
-        self.__cntx.shmem.write("music;prev;")
+        logger.print_log("prev executed.", logger_name=__logger_name)
     elif service_type == "change_shuffle":
-        self.__cntx.shmem.write("music;change_shuffle;")
+        logger.print_log("change_shuffle executed.", logger_name=__logger_name)
     elif service_type == "change_loop":
-        self.__cntx.shmem.write("music;change_loop;")
+        logger.print_log("change_loop executed.", logger_name=__logger_name)
     elif service_type == "toggle_like":
-        self.__cntx.shmem.write("music;toggle_like;")
+        logger.print_log("toggle_like executed.", logger_name=__logger_name)
     elif service_type == "volup":
-        self.__cntx.shmem.write("music;volup;")
+        logger.print_log("volup executed.", logger_name=__logger_name)
     elif service_type == "voldown":
-        self.__cntx.shmem.write("music;voldown;")
+        logger.print_log("voldown executed.", logger_name=__logger_name)
     elif service_type == "volmute":
-        self.__cntx.shmem.write("music;volmute;")
+        logger.print_log("volmute executed.", logger_name=__logger_name)
     elif service_type == "toggle_playing":
-        self.__cntx.shmem.write("music;toggle_playing;")
+        logger.print_log("toggle_playing executed.", logger_name=__logger_name)
     else:
         logger.print_log("Invalid service requested, rejects.", logger_name=self.__logger_name)
 
@@ -51,7 +51,7 @@ def __update_music_delete(service_tokenizer):
     pass
 
 def update(service_tokenizer):
-    service_type = tokens.read()
+    service_type = service_tokenizer.read()
 
     if service_type == "control":
         __update_music_control(service_tokenizer)
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     tokenizer = tok.ServiceTokenizer("4;")
     __update_music_select(tokenizer)
 
-    music.set_mode_loop(music.c_MODE_LOOP_LIST)
+    music.set_mode_loop(music.c_MODE_LOOP_MUSIC)
     music.set_volume(2)
 
     while True:

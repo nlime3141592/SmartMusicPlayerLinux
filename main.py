@@ -39,6 +39,7 @@ def create_proc_db():
 
     import db_handler as db
     proc_ctx.handler_init = db.init
+    proc_ctx.handler_update_always = db.update_always
     proc_ctx.handler_update = db.update
     proc_ctx.handler_final = db.final
 
