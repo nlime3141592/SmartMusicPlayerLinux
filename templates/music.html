@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <title>Smart Music Player</title>
+
+        <link rel="stylesheet" type="text/css" href="../static/css/table.css">
+        <link rel="stylesheet" type="text/css" href="../static/css/text.css">
+    </head>
+    <body>
+        <div>
+            <h1>Upload</h1>
+            <p>
+                <input type="file" name="file" accept=".mp3,.wav">
+                <input type="submit" value="upload">
+            </p>
+        </div>
+        <div>
+            <h1>Music List</h1>
+            <table>
+                <tr>
+                    <th class="table-cell-min-width-64px txt-align-right">ID</th>
+                    <th class="table-cell-min-width-256px txt-align-left">Music Name</th>
+                    <th class="table-cell-min-width-128px txt-align-left">Artists</th>
+                    <th class="table-cell-min-width-128px txt-align-left">Upload Date</th>
+                </tr>
+                <tr>
+                    <td class="txt-align-right">1</td>
+                    <td><a href="/music/select/1">music name 1</a></td>
+                    <td>artist 1</td>
+                    <td>2024.11.28.</td>
+                    <td><button>Delete</button></td>
+                </tr>
+                <tr>
+                    <td class="txt-align-right">2</td>
+                    <td><a href="/music/select/2">music name 2</a></td>
+                    <td>artist 2</td>
+                    <td>2024.11.29.</td>
+                    <td><button>Delete</button></td>
+                </tr>
+            </table>
+
+            <!-- NOTE: Deprecated. -->
+            <!-- p>
+                <button>prev 5</button>
+                <button>prev</button>
+                <a href="">1</a>
+                <span>...</span>
+                <a href="">3</a>
+                <a href="">4</a>
+                <a href="">5</a>
+                <a href="">6</a>
+                <a href="">7</a>
+                <span>...</span>
+                <a href="">24</a>
+                <button>next</button>
+                <button>next 5</button>
+            </p -->
+        </div>
+    </body>
+</html>

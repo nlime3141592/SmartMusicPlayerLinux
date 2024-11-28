@@ -28,6 +28,12 @@ pygame.init()
 pygame.mixer.init()
 pygame.mixer.music.set_endevent(c_MUSIC_END_EVENT)
 
+def try_catch_end_event():
+    for event in pygame.event.get():
+        if event.type == c_MUSIC_END_EVENT:
+            return True
+    return False
+
 def set_volume(volume_int):
     global c_VOLUME_MAX
     global c_VOLUME_MIN
@@ -50,16 +56,19 @@ def get_volume():
     global __volume_int
     return __volume_int
 
-def play(path):
+def play_begin():
     global __is_playing
     global __is_pausing
     global __volume_int
 
-    pygame.mixer.music.load(path)
     set_volume(__volume_int)
     pygame.mixer.music.play()
     __is_pausing = False
     __is_playing = True
+
+def play(path):
+    pygame.mixer.music.load(path)
+    play_begin()
 
 def toggle_pausing():
     global __is_pausing
@@ -77,9 +86,17 @@ def set_mode_loop(mode):
     global __mode_loop
     __mode_loop = mode
 
+def get_mode_loop():
+    global __mode_loop
+    return __mode_loop
+
 def set_mode_shuffle(mode):
     global __mode_shuffle
     __mode_shuffle = mode
+
+def get_mode_shuffle():
+    global __mode_shuffle
+    return __mode_shuffle
 
 if __name__ == "__main__":
     import time

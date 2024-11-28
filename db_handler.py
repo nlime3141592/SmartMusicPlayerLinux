@@ -38,6 +38,9 @@ def init():
         print(f"Error connecting to MariaDB platform: {ex}")
         sys.exit(1)
 
+def update_always():
+    pass
+
 def update(value):
     global connection
     global cursor

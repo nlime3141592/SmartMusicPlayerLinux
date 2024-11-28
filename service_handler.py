@@ -2,6 +2,7 @@ import main
 import logmodule as logger
 import music_handler as music
 import db_handler as db
+import service_tokenizer as tok
 
 __proc_db = None
 __cntx_db = None
@@ -12,18 +13,19 @@ def init():
     __proc_db, __cntx_db = main.create_proc_db()
     __proc_db.start()
 
-def update(value):
+def update_always():
+    music.update_always()
+
+def update(service_string):
     global __cntx_db
 
-    tokens = value.split(";")
+    service_tokenizer = tok.ServiceTokenizer(service_string)
+    service_type = tokenizer.read()
 
-    if tokens[0] == None or tokens[0] == "":
-        logger.print_log(f"Empty service requested. (message == {value})", logger_name=__logger_name)
-    elif tokens[0] == "music":
-        logger.print_log(f"Music service requested. (message == {value})", logger_name=__logger_name)
-        music.update(tokens[1:])
+    if service_type == "music":
+        music.update(service_tokenizer)
     else:
-        logger.print_log(f"Unknown service requested, rejects. (message == {value})", logger_name=__logger_name)
+        logger.print_log(f"Unknown service requested, rejects. (message == {service_string})", logger_name=__logger_name)
 
 def final():
     global __cntx_db, __proc_db

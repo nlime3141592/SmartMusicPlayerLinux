@@ -23,6 +23,7 @@ def create_proc_service():
 
     import service_handler as sv
     proc_ctx.handler_init = sv.init
+    proc_ctx.handler_update_always = sv.update_always
     proc_ctx.handler_update = sv.update
     proc_ctx.handler_final = sv.final
 
