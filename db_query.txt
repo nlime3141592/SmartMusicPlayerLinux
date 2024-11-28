@@ -1,0 +1,20 @@
+DROP DATABASE smartmusicplayer;
+
+CREATE DATABASE smartmusicplayer;
+
+USE smartmusicplayer;
+
+CREATE TABLE musiclist (
+id INT AUTO_INCREMENT PRIMARY KEY,
+music_name VARCHAR(256) DEFAULT "<Unknown>",
+artists VARCHAR(256) DEFAULT "<Unknown>",
+upload_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+reldir VARCHAR(256) NOT NULL DEFAULT "./"
+);
+
+INSERT INTO musiclist (music_name, artists) VALUES ("Another Day", "Holl & Rush, Jordan Jay");
+INSERT INTO musiclist (music_name, artists) VALUES ("Let It Out", "Brooks, Camilia");
+INSERT INTO musiclist (music_name, artists) VALUES ("Breakaway", "Martin Garrix, Mesto, WILHELM");
+INSERT INTO musiclist (music_name, artists) VALUES ("Whiplash", "Hank Levy");
+INSERT INTO musiclist (music_name, artists) VALUES ("Who You Are (ft. MIO)", "Syn Cole");
+INSERT INTO musiclist (music_name, artists) VALUES ("Spaceship (ft. Uffie, MOTi Remix)", "Galantis");
