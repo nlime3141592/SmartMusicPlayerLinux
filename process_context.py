@@ -4,5 +4,6 @@ class ProcessContext:
     name: str
     shmem: SharedMemory
     handler_init: [..., any]
+    handler_update_always: [..., any]
     handler_update: [..., any]
     handler_final: [..., any]

@@ -16,12 +16,13 @@ def main(*args):
 
     while is_run == True:
         proc_ctx.shmem.update()
+        proc_ctx.handler_update_always()
         if proc_ctx.shmem.can_read():
-            value = proc_ctx.shmem.read()
-            if value == "0" or value == 0:
+            service_string = proc_ctx.shmem.read()
+            if service_string == "0" or service_string == 0:
                 break
             else:
-                proc_ctx.handler_update(value)
+                proc_ctx.handler_update(service_string)
                 continue
 
     proc_ctx.handler_final()
