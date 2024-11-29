@@ -3,7 +3,12 @@ import music
 
 __logger_name = "MusicService"
 
-# TODO: Move this code to music service handling python file.
+def init():
+    pass
+
+def final():
+    pass
+
 def update_always():
     if music.try_catch_end_event() == False:
         return
