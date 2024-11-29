@@ -3,6 +3,7 @@ from flask import render_template
 
 from root_api import RootApi
 from music_api import MusicApi
+from cam_api import CamApi
 
 import proc
 import multiprocessing as mp
@@ -57,6 +58,7 @@ def main():
     # TODO: Initialize APIs here.
     RootApi.init(websv, __cntx_service)
     MusicApi.init(websv, __cntx_service)
+    CamApi.init(websv, __cntx_service)
 
     __proc_service.start()
     websv.run(host="0.0.0.0", debug=True, port=5000, use_reloader=False)
