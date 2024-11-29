@@ -39,7 +39,7 @@ def __update_music_control(service_tokenizer):
     elif service_type == "toggle_playing":
         logger.print_log("toggle_playing executed.", logger_name=__logger_name)
     else:
-        logger.print_log("Invalid service requested, rejects.", logger_name=self.__logger_name)
+        logger.print_log("Invalid service requested, rejects.", logger_name=__logger_name)
 
 def __update_music_select(service_tokenizer):
     music_id = int(service_tokenizer.read())
@@ -60,7 +60,7 @@ def update(service_tokenizer):
     elif service_type == "delete":
         __update_music_delete(service_tokenizer)
     else:
-        logger.print_log("Invalid service requested, rejects.", logger_name=self.__logger_name)
+        logger.print_log("Invalid service requested, rejects.", logger_name=__logger_name)
 
 # NOTE: The entry point when testing this file.
 if __name__ == "__main__":
