@@ -27,6 +27,11 @@ document.getElementById("btn_music_prev").onclick = async () =>
     musicPlayerStatus = response.json()
 }
 
+document.getElementById("btn_music_list").onclick = async () =>
+{
+   window.location.href = "/music"
+}
+
 document.getElementById("btn_music_shuffle").onclick = async () =>
 {
     let response = await fetch("/music/control/change_shuffle", {
