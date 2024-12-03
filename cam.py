@@ -56,9 +56,9 @@ def record_video():
         cv2.waitKey(1)
 
     if __frame_time >= __delta_time:
+        __frame_number += 1
         fname = __dir_images[__idx_dir_images] + "{:08d}.jpg".format(__frame_number)
         cv2.imwrite(fname, __frame)
-        __frame_number += 1
 
         while __frame_time >= __delta_time:
             __frame_time -= __delta_time
@@ -87,13 +87,25 @@ def get_ffmpeg_command():
 
     return command
 
+def get_live_img_data():
+    global __frame
+    global __dir_images
+    global __idx_dir_images
+
+    # NOTE: Busy-Waiting
+    while __frame_number < 0:
+        pass
+
+    fname = __dir_images[__idx_dir_images] + "{:08d}.jpg".format(__frame_number)
+    return os.path.abspath(fname)
+
 def create_video():
     global __dir_video
     global __frame_number
     global __idx_dir_images
     global __proc_video
 
-    if __frame_number < c_FRAME_RATE_VIDEO:
+    if __frame_number < c_FRAME_RATE_VIDEO - 1:
         return
 
     now = datetime.datetime.now()
@@ -113,7 +125,7 @@ def create_video():
     command = create_cli_command(ffmpeg_args)
     logger.print_log(f"Create Video: {command}")
     __proc_video = subprocess.Popen(command)
-    __frame_number = 0
+    __frame_number = -1
     __idx_dir_images = 1 - __idx_dir_images
 
 def check_video_creation_complete():
