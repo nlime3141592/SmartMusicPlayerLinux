@@ -150,17 +150,8 @@ def start_cam():
     __timestamp_end = time.time()
 
 def generate_frame():
-    global __read_complete, __frame
-
-    if not __read_complete:
-        return False, None
-
-    read_complete, buffer = cv2.imencode(".jpg", __frame)
-
-    if not read_complete:
-        return False, None
-
-    return True, buffer.tobytes()
+    global __frame
+    return __frame.tobytes()
 
 def update_always():
     record_video()

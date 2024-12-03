@@ -14,13 +14,14 @@ def __update_cam_live(service_tokenizer):
     service_type = service_tokenizer.read()
 
     if service_type == "image":
-        read_complete, frame = cam.generate_frame()
+        img_bytes = cam.generate_frame()
 
-        if read_complete:
-            proc.proc_ctx.shmem.write("1")
-            proc.proc_ctx.shmem.write(frame)
-        else:
-            proc.proc_ctx.shmem.write("0")
+        shape = img_bytes.shape
+        dtype = str(img_bytes.dtype)
+
+        proc.proc_ctx.shmem.write(shape)
+        proc.proc_ctx.shmem.write(dtype)
+        proc.proc_ctx.shmem.write(img_bytes.tobytes())
     else:
         logger.print_log("Invalid service requested, rejects.", logger_name=__logger_name)
 

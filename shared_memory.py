@@ -9,6 +9,8 @@ class SharedMemory:
         self.__ptr_m = manager.Value("i", 0)
         self.__ptr_r = manager.Value("i", 0)
 
+        self.__lock = mp.Lock()
+
     def swap_stream(self):
         self.__in, self.__out = self.__out, self.__in
 
@@ -22,15 +24,17 @@ class SharedMemory:
         return self.__ptr_m.value != self.__ptr_f.value
 
     def write(self, value):
-        i = self.__ptr_r.value
-        self.__out[i] = value
-        self.__ptr_r.value = (i + 1) % self.__buffer_size
+        with self.__lock:
+            i = self.__ptr_r.value
+            self.__out[i] = value
+            self.__ptr_r.value = (i + 1) % self.__buffer_size
 
     def read(self):
-        i = self.__ptr_f.value
-        value = self.__in[i]
-        self.__ptr_f.value = (i + 1) % self.__buffer_size
-        return value
+        with self.__lock:
+            i = self.__ptr_f.value
+            value = self.__in[i]
+            self.__ptr_f.value = (i + 1) % self.__buffer_size
+            return value
 
     def seek(self):
         if self.can_read():

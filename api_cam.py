@@ -2,6 +2,8 @@ from flask import render_template
 from flask import redirect
 from flask import request
 
+import numpy as np
+
 import logmodule as logger
 from service_tokenizer import ServiceTokenizer
 
@@ -16,13 +18,13 @@ def init(websv, proc_cntx):
     def cam_live_image():
         proc_cntx.shmem.write("cam;live;image;")
 
-        if proc_cntx.shmem.read() == "1":
-            length = proc_cntx.shmem.read()
-            frame = proc_cntx.shmem.read()
-            return Response(self.__generate_frames(frame), mimetype="multipart/x-mixed-replace; boundary=frame")
-        else:
-            logger.print_log("Invalid service requested, rejects.", logger_name=__logger_name)
-            return render_template("./cam.html")
+        shape = proc_cntx.shmem.read()
+        dtype = proc_cntx.shmem.read()
+        img_bytes = proc_cntx.shmem.read()
+
+        frame = np.frombuffer(img_bytes, dtype=dtype).reshape(shape)
+
+        return Response(__generate_frames(frame), mimetype="multipart/x-mixed-replace; boundary=frame")
 
     def __generate_frames(frame):
         yield (b"--frame\n"b"Content-Type: image/jpeg\n\n" + frame + b"\n\n")
