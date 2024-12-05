@@ -5,9 +5,15 @@
 
 import mariadb
 import sys
+import re as regex
+
+import os
+import logmodule as logger
 
 connection = None
 cursor = None
+
+__logger_name = "DB"
 
 def get_test(value):
     global cursor
@@ -25,17 +31,34 @@ def get_test(value):
 def init():
     global connection
     global cursor
+    
+    info = {}
+    file = None
+    
+    try:
+        path = os.path.abspath("./db_info.txt")
+        file = open(path, "r")
+        
+        for i in range(5):
+            line = file.readline()
+            line = regex.sub(r"\s+", "", line)
+            tokens = line.split(":")
+            info[tokens[0]] = tokens[1]
+    except Exception as ex:
+        logger.print_log(f"DB Setting Error: {ex}", logger_name=__logger_name)
+    finally:
+        file.close()
 
     try:
         connection = mariadb.connect(
-                user = "root",
-                password = "1234",
-                host = "localhost",
-                port = 3306,
-                database = "test")
+                user = info["user"],
+                password = info["password"],
+                host = info["host"],
+                port = int(info["port"]),
+                database = info["database"])
         cursor = connection.cursor()
     except mariadb.Error as ex:
-        print(f"Error connecting to MariaDB platform: {ex}")
+        logger.print_log(f"Error connecting to MariaDB platform: {ex}", logger_name=__logger_name)
         sys.exit(1)
 
 def update_always():
@@ -51,7 +74,7 @@ def update(value):
     try:
         get_test(value)
     except mariadb.Error as ex:
-        print(f"Invalid SQL syntax: {ex}")
+        logger.print_log(f"Invalid SQL syntax: {ex}", logger_name=__logger_name)
 
 def final():
     global connection

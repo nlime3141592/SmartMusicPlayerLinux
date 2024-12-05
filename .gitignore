@@ -3,6 +3,7 @@
 cam/*/*.jpg
 cam/*/*.mp4
 
+db_info.txt
 #################################################
 
 # Byte-compiled / optimized / DLL files
