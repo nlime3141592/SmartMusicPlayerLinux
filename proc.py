@@ -8,6 +8,10 @@ proc_ctx = None
 
 def main(*args):
     os.setpgrp()
+
+    global proc_ctx
+    global is_run
+
     proc_ctx = args[0]
     proc_ctx.shmem.swap_stream()
 
