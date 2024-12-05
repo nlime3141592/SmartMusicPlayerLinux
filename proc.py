@@ -11,8 +11,9 @@ def main(*args):
 
     global proc_ctx
     global is_run
-
+    
     proc_ctx = args[0]
+    os.chdir(proc_ctx.current_dir)
     proc_ctx.shmem.swap_stream()
 
     logger.print_log("Process starts.", logger_name=proc_ctx.name)
