@@ -5,6 +5,7 @@ import api_root
 import api_music
 import api_cam
 
+import os
 import proc
 import multiprocessing as mp
 import process_context as pctx
@@ -18,9 +19,15 @@ __proc_service = None
 __cntx_service = None
 
 def create_proc_service():
+    mpManager = mp.Manager()
+
     proc_ctx = pctx.ProcessContext()
     proc_ctx.name = "PROC_SERVICE"
-    proc_ctx.shmem = shmem.SharedMemory(mp.Manager())
+    proc_ctx.shmem = shmem.SharedMemory(mpManager)
+    proc_ctx.cam_bytes = bytearray(640 * 480 * 3)
+    proc_ctx.cam_lock = mpManager.Lock()
+    
+    proc_ctx.current_dir = os.path.abspath(".")
 
     import service_handler as sv
     proc_ctx.handler_init = sv.init
@@ -34,9 +41,13 @@ def create_proc_service():
     return process, proc_ctx
 
 def create_proc_db():
+    mpManager = mp.Manager()
+
     proc_ctx = pctx.ProcessContext()
     proc_ctx.name = "PROC_DB"
-    proc_ctx.shmem = shmem.SharedMemory(mp.Manager())
+    proc_ctx.shmem = shmem.SharedMemory(mpManager)
+    
+    proc_ctx.current_dir = os.path.abspath(".")
 
     import db_handler as db
     proc_ctx.handler_init = db.init

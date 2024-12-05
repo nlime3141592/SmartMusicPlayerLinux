@@ -3,11 +3,10 @@ import glob
 import cv2
 import time
 import datetime
-import subprocess
 
 import logmodule as logger
 
-c_CAM_INDEX = 0
+c_CAM_INDEX = -1
 
 # NOTE:
 # DO NOT exceed webcam hardware's maximum frame rate.
@@ -15,11 +14,11 @@ c_CAM_INDEX = 0
 c_FRAME_RATE = 30
 
 # NOTE: c_FRAME_RATE_VIDEO = c_FRAME_RATE * videoLengthSeconds
-c_FRAME_RATE_VIDEO = c_FRAME_RATE * 10
+c_FRAME_RATE_VIDEO = c_FRAME_RATE * 5
 
 __delta_time = 0.033 #1.0 / c_FRAME_RATE
 __frame_time = 0
-__frame_number = 0
+__frame_number = -1
 __timestamp_beg = time.time()
 __timestamp_end = time.time()
 
@@ -33,11 +32,38 @@ __idx_dir_images = 0
 __img_fname = "%08d.jpg"
 
 __dir_video = "./cam/video/"
+__videos = [ None, None ]
 
 __capture = cv2.VideoCapture(0)
 __read_complete, __frame = __capture.read()
 
-__proc_video = None
+def init_video():
+    global c_FRAME_RATE
+    global __dir_video
+    
+    h, w, l = (480, 640, 3)
+    
+    now = datetime.datetime.now()
+    now_str = now.strftime("%Y%m%d_%H%M%S")
+    fname = __dir_video + f"{now_str}.mp4"
+    
+    wr = cv2.VideoWriter_fourcc(*"mp4v")
+    return cv2.VideoWriter(fname, wr, c_FRAME_RATE, (w, h))
+
+def save_video():
+    global __videos
+    global __idx_dir_images
+
+    __videos[__idx_dir_images].release()
+    logger.print_log("Video Saved.", logger_name=__logger_name)
+
+def create_video():
+    global __frame_number
+    global __idx_dir_images
+
+    __idx_dir_images = 1 - __idx_dir_images
+    __frame_number = -1
+    __videos[__idx_dir_images] = init_video()
 
 def record_video():
     global __read_complete, __frame
@@ -48,6 +74,7 @@ def record_video():
     global __timestamp_beg, __timestamp_end
     global __idx_dir_images
     global __dir_images, __img_fname
+    global __videos
 
     __read_complete, __frame = __capture.read()
 
@@ -59,104 +86,44 @@ def record_video():
         __frame_number += 1
         fname = __dir_images[__idx_dir_images] + "{:08d}.jpg".format(__frame_number)
         cv2.imwrite(fname, __frame)
+        __videos[__idx_dir_images].write(__frame)
 
         while __frame_time >= __delta_time:
             __frame_time -= __delta_time
+
+        if __frame_number >= c_FRAME_RATE_VIDEO - 1:
+            save_video()
+            create_video()
 
     __timestamp_end = time.time()
     __frame_time += (__timestamp_end - __timestamp_beg)
     __timestamp_beg = __timestamp_end
 
-def create_cli_command(tokens):
-    command = ""
-    for token in tokens:
-        command += token + " "
-    return command
-
-def get_ffmpeg_command():
-    global __ffmpeg_args
-    global __dir_video
-
-    #import pytz
-    #timezone = pytz.timezone("Asia/Seoul")
+def start_cam():
+    global __timestamp_beg
+    global __timestamp_end
+    global __dir_images
+    global __videos
     
-    command = ""
-
-    for token in __ffmpeg_args:
-        command += token + " "
-
-    return command
-
-def get_live_img_data():
-    global __frame
-    global __dir_images
-    global __idx_dir_images
-
-    # NOTE: Busy-Waiting
-    while __frame_number < 0:
-        pass
-
-    fname = __dir_images[__idx_dir_images] + "{:08d}.jpg".format(__frame_number)
-    return os.path.abspath(fname)
-
-def create_video():
-    global __dir_video
-    global __frame_number
-    global __idx_dir_images
-    global __proc_video
-
-    if __frame_number < c_FRAME_RATE_VIDEO - 1:
-        return
-
-    now = datetime.datetime.now()
-    now_str = now.strftime("%Y-%m-%d-%H-%M-%S")
-    fname = __dir_video + f"{now_str}.mp4"
-
-    ffmpeg_args = [
-    "ffmpeg",
-    "-framerate", str(c_FRAME_RATE),
-    "-i", __dir_images[__idx_dir_images] + __img_fname,
-    "-c:v", "libx264",
-    "-r", str(c_FRAME_RATE),
-    "-pix_fmt", "yuv420p",
-    fname
-    ]
-
-    command = create_cli_command(ffmpeg_args)
-    logger.print_log(f"Create Video: {command}")
-    __proc_video = subprocess.Popen(command)
-    __frame_number = -1
-    __idx_dir_images = 1 - __idx_dir_images
-
-def check_video_creation_complete():
-    global __proc_video
-    global __dir_images
-    global __idx_dir_images
-
-    if __proc_video == None:
-        return
-    elif __proc_video.poll() is not None:
-        __proc_video = None
-        logger.print_log("Video creation completed.", logger_name=__logger_name)
-
-        files = glob.glob(os.path.join(__dir_images[1 - __idx_dir_images], "*.jpg"))
-
+    def clear_imgs(dir):
+        files = glob.glob(os.path.join(dir, "*.jpg"))
         for file in files:
             if os.path.isfile(file):
                 os.remove(file)
+                
+    clear_imgs(__dir_images[0])
+    clear_imgs(__dir_images[1])
+    
+    __videos[0] = init_video()
 
-def start_cam():
     __timestamp_beg = time.time()
     __timestamp_end = time.time()
 
-def generate_frame():
-    global __frame
-    return __frame.tobytes()
-
 def update_always():
     record_video()
-    create_video()
-    check_video_creation_complete()
+
+def final():
+    save_video()
 
 if __name__ == "__main__":
     try:
@@ -168,5 +135,6 @@ if __name__ == "__main__":
         while True:
             update_always()
     finally:
+        create_video()
         __capture.release()
         cv2.destroyAllWindows()
